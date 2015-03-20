@@ -18,6 +18,7 @@ $vm_gui = false
 $vm_memory = 1024
 $vm_cpus = 1
 $shared_folders = {}
+$forwarded_ports = {}
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
 # $num_instances while allowing config.rb to override it
@@ -123,6 +124,8 @@ Vagrant.configure("2") do |config|
       $shared_folders.each_with_index do |(host_folder, guest_folder), index|
         config.vm.synced_folder host_folder.to_s, guest_folder.to_s, id: "core-share%02d" % index, nfs: true, mount_options: ['nolock,vers=3,udp']
       end
+
+      $forwarded_ports.each { |x| config.vm.network "forwarded_port", guest: x, host: x, auto_correct: true }
 
       if $share_home
         config.vm.synced_folder ENV['HOME'], ENV['HOME'], id: "home", :nfs => true, :mount_options => ['nolock,vers=3,udp']

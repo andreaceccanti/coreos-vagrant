@@ -5,3 +5,5 @@ $vb_gui = false
 $vb_memory = 2048
 $vb_cpus = 4
 $share_home = true
+
+$forwarded_ports = [ 3306, 15672, 5672, 1044 ]
