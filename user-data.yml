@@ -48,7 +48,6 @@ coreos:
   fleet:
     public-ip: $public_ipv4
   units:
-
     - name: docker-tcp.socket
       command: start
       enable: true
