@@ -19,6 +19,7 @@ $vm_memory = 1024
 $vm_cpus = 1
 $shared_folders = {}
 $forwarded_ports = {}
+$docker_disk = nil
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
 # $num_instances while allowing config.rb to override it
@@ -114,6 +115,13 @@ Vagrant.configure("2") do |config|
 
         vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
         vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+
+        if not $docker_disk.nil?
+          unless File.exist?($docker_disk)
+            vb.customize ["createhd", "--filename", $docker_disk, "--size", 2000 * 1024]
+          end
+          vb.customize ["storageattach", :id, "--storagectl", "IDE Controller", "--port", 1, "--device", 0, "--type", "hdd", "--medium", $docker_disk]
+        end
       end
 
       ip = "172.17.8.#{i+100}"
@@ -135,7 +143,6 @@ Vagrant.configure("2") do |config|
         config.vm.provision :file, :source => "#{CLOUD_CONFIG_PATH}", :destination => "/tmp/vagrantfile-user-data"
         config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
       end
-
     end
   end
 end
